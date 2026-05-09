@@ -2,7 +2,7 @@ from fastapi import APIRouter,Depends
 from pydantic import BaseModel
 
 from app.core.brain import generate_reply
-from app.auth.depedencies import get_current_user
+from app.auth.dependencies import get_current_user
 
 
 router=APIRouter()

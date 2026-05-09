@@ -20,9 +20,9 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     const data = await loginApi(credentials)
-    setToken(data.token)
+    setToken(data.access_token)
     setUser(data.user || { email: credentials.email })
-    saveAuth(data.token, data.user || { email: credentials.email })
+    saveAuth(data.access_token, data.user || { email: credentials.email })
     return data
   }
 

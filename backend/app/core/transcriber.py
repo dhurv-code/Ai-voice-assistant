@@ -1,9 +1,23 @@
-# using whistle : an ai model for speech to text
-import whisper
+from faster_whisper import WhisperModel
 
-model=whisper.load_model("base")
+model = WhisperModel(
+    "tiny",
+    device="cpu",
+    compute_type="int8"
+)
 
 def transcribe_audio(audio_path):
-    result=model.transcribe(audio_path,fp16=False)
-    print("Transcribed:", result["text"])
-    return result["text"]
+
+    segments, info = model.transcribe(
+        audio_path,
+        language="hi"
+    )
+
+    text = ""
+
+    for segment in segments:
+        text += segment.text
+
+    print("Transcribed:", text)
+
+    return text

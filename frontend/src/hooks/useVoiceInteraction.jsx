@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { sendVoice } from '../services/voiceService'
 
-const TIMEOUT_MS = 4200
+const TIMEOUT_MS = 3000
 
 export function useVoiceInteraction() {
   const [status, setStatus] = useState('idle')

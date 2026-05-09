@@ -29,27 +29,10 @@ Keep responses conversational and realistic.
 
 def generate_reply(user_id, user_text):
 
-    emotion = detect_emotion(user_text)
-
-    emotion_context = f"""
-    The user's emotional state is:
-    {emotion}
-    """
-
     history = get_memory(user_id)
 
     messages = [
-
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT
-        },
-
-        {
-            "role": "system",
-            "content": emotion_context
-        }
-
+        {"role": "system", "content": SYSTEM_PROMPT}
     ] + history
 
     messages.append({
@@ -64,10 +47,6 @@ def generate_reply(user_id, user_text):
 
     reply = response.choices[0].message.content
 
-    update_memory(
-        user_id,
-        user_text,
-        reply
-    )
+    update_memory(user_id,user_text, reply)
 
     return reply

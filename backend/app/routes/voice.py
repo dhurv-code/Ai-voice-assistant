@@ -1,42 +1,78 @@
-from fastapi import APIRouter,UploadFile, File
+from fastapi import (
+    APIRouter,
+    UploadFile,
+    File,
+    Depends
+)
+from fastapi.responses import FileResponse
+from app.auth.dependencies import get_current_user
+
 from app.core.transcriber import transcribe_audio
 from app.core.brain import generate_reply
 from app.core.speaker import generate_voice
+
 import shutil
 import uuid
 import os
+import time
 
-router=APIRouter()
 
-UPLOAD_DIR="storage/audio"
+router = APIRouter()
 
-os.makedirs(UPLOAD_DIR,exist_ok=True)
+UPLOAD_DIR = "storage/audio"
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/voice")
-async def voice_assistant(file:UploadFile=File(...)):
-    audio_id=uuid.uuid4().hex
-    input_path=f"{UPLOAD_DIR}/{audio_id}.wav"
-    output_path=f"{UPLOAD_DIR}/{audio_id}_response.mp3"
 
-    # ṣaving the audio
-    audio_path= f"temp_{file.filename}"
-    with open(audio_path,"wb")as buffer:
-        shutil.copyfileobj(file.file,buffer)
-        
+async def voice_assistant(
+    file: UploadFile = File(...),
+    # current_user=Depends(get_current_user)
+):
 
-    # step 1: speech->text
-    text=transcribe_audio(input_path)
+    print("Request received")
 
-    # step 2: ai response
-    reply=generate_reply(text)
+    audio_id = uuid.uuid4().hex
 
-    # step 3: text->speech
+    input_path = f"{UPLOAD_DIR}/{audio_id}.wabm"
 
-    await generate_voice(reply,output_path)
+    output_path = f"{UPLOAD_DIR}/{audio_id}_response.mp3"
 
-    return{
-        "user_text":text,
-        "assistant_text":reply,
-        "audio_url":f"/audio/{audio_id}_response.mp3"
-    }
+    print("Saving audio")
 
+    with open(input_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    print("Starting transcription")
+    start=time.time()
+
+    text = transcribe_audio(input_path)
+    print(
+        "TRASCRIPTION TIME:",
+        time.time()-start
+    )
+
+    print("TEXT:", text)
+
+    print("Generating reply")
+
+    reply = generate_reply(
+        # current_user["user_id"],
+        "test_user",
+        text
+    )
+
+    print("REPLY:", reply)
+
+    print("Generating voice")
+    start=time.time()
+
+    await generate_voice(reply, output_path)
+    print("TTS TIME",time.time()-start)
+
+    print("Finished")
+
+    return FileResponse(
+    output_path,
+    media_type="audio/mpeg"
+)

@@ -126,6 +126,11 @@ This project is focused on creating a realistic AI friend experience instead of 
 - Frontend plays AI voice response
 - 
 
-
+- Current Limitations
+- Not fully real-time yet
+- Fixed-duration recording
+- Browser microphone quality affects speech recognition
+- Streaming conversations not implemented yet
+- 
 - Author
 - Dhurv Gupta
